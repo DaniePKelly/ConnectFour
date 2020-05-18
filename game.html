@@ -30,6 +30,8 @@
         redWinsImage.src = "Assets/redwins.png";
         var yellowWinsImage = new Image();
         yellowWinsImage.src = "Assets/yellowwins.png";
+        var blackQuadImage = new Image();
+        blackQuadImage.src = "Assets/blackquad.png";
         
         
         var player = 1; 
@@ -86,38 +88,56 @@
         }
         
         function checkwin(col,row,player){
+            let offsets = new Array(4);
+            offsets[0] = [0,1]; //Vertical
+            offsets[1] = [1,0]; //Horizontal
+            offsets[2] = [1,1]; //diagonal 1
+            offsets[3] = [-1,1]; //diagonal 2
             //check vertical
+            for( let i = 0; i<4; i++){
+                
+                let rowTocheck = row;
+                let columnToCheck = col;
+                let count = 1;
+
+                while( true) {
+                    rowTocheck += offsets[i][1];
+                    columnToCheck += offsets[i][0];
+                    if( rowTocheck < 0 || columnToCheck <0 || rowTocheck > 5 || columnToCheck > 6) break;
+                    if( board[columnToCheck][rowTocheck] == player){
+                        count++;
+                    }
+                    else{
+                        break;
+                    }
+                }
+                rowTocheck = row;
+                columnToCheck = col;
+                
+                while( true){
+                    rowTocheck -= offsets[i][1];
+                    columnToCheck -= offsets[i][0];
+                    if( rowTocheck < 0 || columnToCheck <0 || rowTocheck > 5 || columnToCheck > 6) break;
+                    if( board[columnToCheck][rowTocheck] == player){
+                        count++;
+                    }
+                    else{
+                        break;
+                    }
+                }
             
-            let rowTocheck = row;
-            let count = 1;
-            while( rowTocheck > 0){
-                rowTocheck --;
-                if( board[col][rowTocheck] == player){
-                    count++;
+            
+                if (count == 4){
+                    console.log("gameover");
+                    gameState = player ==1 ?state.YELLOWWINS : state.REDWINS;
                 }
-                else{
-                    break;
-                }
-            }
-            rowTocheck = row;
-            while( rowTocheck < 5){
-                rowTocheck ++;
-                if( board[col][rowTocheck] == player){
-                    count++;
-                }
-                else{
-                    break;
-                }
-            }
-            if (count == 4){
-                console.log("gameover");
-                gameState = player ==1 ?state.YELLOWWINS : state.REDWINS;
             }
         }
         function draw() { 
             var canvas = document.getElementById('tutorial');
                 if (canvas.getContext) {
                     var ctx = canvas.getContext('2d');
+                    ctx.clearRect(0,0,726,626)
                     ctx.drawImage(boardImage,0,0);
                     for(let row = 0; row<6; row++){
                         for(let col = 0; col<7; col++){
@@ -139,11 +159,13 @@
                     }
                     
                 
-                    if(gameState == state.REDWINS){ 
+                    if(gameState == state.REDWINS){
+                        ctx.drawImage(blackQuadImage,0,0);
                         ctx.drawImage(redWinsImage, 200, 200);
                         ctx.drawImage(playAgainImage,200, 350);
                     }
                     else if(gameState == state.YELLOWWINS){
+                        ctx.drawImage(blackQuadImage,0,0);
                         ctx.drawImage(yellowWinsImage, 200, 200);
                         ctx.drawImage(playAgainImage,200, 350);
                     }
